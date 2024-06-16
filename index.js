@@ -56,6 +56,10 @@ app.get('/api/favorites', async (req, res, next) => {
         console.log(await fetchFavorites(moe.id));
         await destroyFavorite(favorites[0].id);
         console.log(await fetchFavorites(moe.id));
+
+        const port = process.env.PORT || 3000;
+        app.listen(port, () =>
+            console.log(`listening on port ${port}`));
     };
 
     init();
