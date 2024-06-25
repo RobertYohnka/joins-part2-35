@@ -21,45 +21,52 @@ app.get('/api/users', async (req, res, next) => {
     }
 });
 
-app.get('/api/favorites', async (req, res, next) => {
+app.get('/api/users/:id/favorites', async (req, res, next) => {
+    try {
+        res.send(await fetchFavorites(req.params.id));
+    } catch (error) {
+        next(error);
+    }
+});
 
 
-    const init = async () => {
-        console.log('connecting to database');
-        await client.connect();
-        console.log('connected to database');
-        await client.query(SQL);
-        console.log('tables created');
-        const [moe, lucy, curly, ethyl, flowers, paint, lumber, appliances] = await Promise.all([
-            createUser({ name: 'moe' }),
-            createUser({ name: 'lucy' }),
-            createUser({ name: 'curly' }),
-            createUser({ name: 'ethyl' }),
-            createProduct({ name: 'flowers' }),
-            createProduct({ name: 'paint' }),
-            createProduct({ name: 'lumber' }),
-            createProduct({ name: 'appliances' }),
-        ]);
-        const users = (await fetchUsers());
-        console.log(users);
-        const products = (await fetchProducts());
-        console.log(products);
-        console.log(moe.id)
-        console.log(flowers.id)
 
-        const favorites = await Promise.all([
-            createFavorite({ user_id: moe.id, product_id: flowers.id }),
-            createFavorite({ user_id: ethyl.id, product_id: paint.id }),
-            createFavorite({ user_id: lucy.id, product_id: lumber.id }),
-        ]);
+const init = async () => {
+    console.log('connecting to database');
+    await client.connect();
+    console.log('connected to database');
+    await client.query(SQL);
+    console.log('tables created');
+    const [moe, lucy, curly, ethyl, flowers, paint, lumber, appliances] = await Promise.all([
+        createUser({ name: 'moe' }),
+        createUser({ name: 'lucy' }),
+        createUser({ name: 'curly' }),
+        createUser({ name: 'ethyl' }),
+        createProduct({ name: 'flowers' }),
+        createProduct({ name: 'paint' }),
+        createProduct({ name: 'lumber' }),
+        createProduct({ name: 'appliances' }),
+    ]);
+    const users = (await fetchUsers());
+    console.log(users);
+    const products = (await fetchProducts());
+    console.log(products);
+    console.log(moe.id)
+    console.log(flowers.id)
 
-        console.log(await fetchFavorites(moe.id));
-        await destroyFavorite(favorites[0].id);
-        console.log(await fetchFavorites(moe.id));
+    const favorites = await Promise.all([
+        createFavorite({ user_id: moe.id, product_id: flowers.id }),
+        createFavorite({ user_id: ethyl.id, product_id: paint.id }),
+        createFavorite({ user_id: lucy.id, product_id: lumber.id }),
+    ]);
 
-        const port = process.env.PORT || 3000;
-        app.listen(port, () =>
-            console.log(`listening on port ${port}`));
-    };
+    console.log(await fetchFavorites(moe.id));
+    await destroyFavorite(favorites[0].id);
+    console.log(await fetchFavorites(moe.id));
 
-    init();
+    const port = process.env.PORT || 3000;
+    app.listen(port, () =>
+        console.log(`listening on port ${port}`));
+};
+
+init();
