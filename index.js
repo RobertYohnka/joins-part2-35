@@ -48,7 +48,7 @@ app.post('/api/users/:id/favorites', async (req, res, next) => {
 
 app.delete('/api/users/:id/favorites/:favorite_id', async (req, res, next) => {
     try {
-        await destroyFavorite({ user_id: req.params.userId, id: req.params.id });
+        await destroyFavorite({ user_id: req.params.userId, id: req.params.favorite_id });
         res.sendStatus(204);
     } catch (error) {
         next(error);
@@ -63,10 +63,10 @@ const init = async () => {
     await createTables();
     console.log('tables created');
     const [moe, lucy, curly, ethyl, flowers, paint, lumber, appliances] = await Promise.all([
-        createUser({ name: 'moe' }),
-        createUser({ name: 'lucy' }),
-        createUser({ name: 'curly' }),
-        createUser({ name: 'ethyl' }),
+        createUser({ username: 'moe', password: 'moe123' }),
+        createUser({ username: 'lucy', password: 'lucy123' }),
+        createUser({ username: 'curly', password: 'curly123' }),
+        createUser({ username: 'ethyl', password: 'ethyl123' }),
         createProduct({ name: 'flowers' }),
         createProduct({ name: 'paint' }),
         createProduct({ name: 'lumber' }),

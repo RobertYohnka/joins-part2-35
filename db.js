@@ -12,7 +12,7 @@ const createTables = async () => {
         CREATE TABLE users(
             id UUID PRIMARY KEY,
             username VARCHAR(50) NOT NULL UNIQUE,
-            password VARCHAR(50) NOT NULL
+            password VARCHAR(250) NOT NULL
         );
 
         CREATE TABLE products(
