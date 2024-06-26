@@ -11,20 +11,20 @@ const createTables = async () => {
 
         CREATE TABLE users(
             id UUID PRIMARY KEY,
-            username VARCHAR(50) UNIQUE NOT NULL,
+            username VARCHAR(50) NOT NULL UNIQUE,
             password VARCHAR(50) NOT NULL
         );
 
         CREATE TABLE products(
             id UUID PRIMARY KEY,
-            name VARCHAR(100) NOT NULL
+            name VARCHAR(100) NOT NULL UNIQUE
         );
         
         CREATE TABLE favorites(
             id UUID PRIMARY KEY,
             product_id UUID REFERENCES products(id) NOT NULL,
             user_id UUID REFERENCES users(id) NOT NULL,
-            CONSTRAINT unique_favorite UNIQUE (product_id, user_id) 
+            CONSTRAINT unique_favorite UNIQUE (user_id, product_id) 
         );
     `;
     await client.query(SQL);
@@ -58,36 +58,40 @@ const createFavorite = async ({ user_id, product_id }) => {
     `;
     const response = await client.query(SQL, [uuid.v4(), user_id, product_id]);
     return response.rows[0];
-}
+};
 
 const fetchUsers = async () => {
     const SQL = `
-    SELECT * FROM users;
-    `
-    const response = await client.query(SQL);
-    return response.rows;
-}
-
-const fetchProducts = async () => {
-    const SQL = `
-    SELECT * FROM products;
+    SELECT id, username 
+    FROM users;
     `;
     const response = await client.query(SQL);
     return response.rows;
-}
+};
+
+const fetchProducts = async () => {
+    const SQL = `
+    SELECT * 
+    FROM products;
+    `;
+    const response = await client.query(SQL);
+    return response.rows;
+};
 
 const fetchFavorites = async (user_id) => {
     const SQL = `
-    SELECT * FROM favorites
+    SELECT * 
+    FROM favorites
     WHERE user_id = $1
     `;
     const response = await client.query(SQL, [user_id]);
     return response.rows;
-}
+};
 
 const destroyFavorite = async ({ id, user_id }) => {
     const SQL = `
-    DELETE FROM favorites
+    DELETE 
+    FROM favorites
     WHERE id = $1 AND user_id = $2
     `;
     await client.query(SQL, [id, user_id]);
@@ -96,11 +100,11 @@ const destroyFavorite = async ({ id, user_id }) => {
 module.exports = {
     client,
     createTables,
-    createProduct,
     createUser,
+    createProduct,
+    createFavorite,
     fetchUsers,
     fetchProducts,
-    createFavorite,
     fetchFavorites,
     destroyFavorite
 };
